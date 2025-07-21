@@ -93,18 +93,27 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const repos = await getRepos(username);
             
-            let emails = [];
+            let allEmails = new Set();
             if (repos.length > 0) {
-                emails = await getEmailsFromRepoCommits(username, repos[0].name);
+                for (const repo of repos) {
+                    try {
+                        const emails = await getEmailsFromRepoCommits(username, repo.name);
+                        emails.forEach(email => allEmails.add(email));
+                    } catch (error) {
+                        console.error(`${repo.name} repo'sunda email aranırken hata:`, error);
+                    }
+                }
             }
+        
+            const emailsArray = Array.from(allEmails);
             
             return {
                 username: userData.login,
                 name: userData.name,
                 avatar_url: userData.avatar_url,
                 bio: userData.bio,
-                email: emails.length > 0 ? emails[0] : null,
-                other_emails: emails.length > 1 ? emails.slice(1) : [],
+                email: emailsArray.length > 0 ? emailsArray[0] : null,
+                other_emails: emailsArray.length > 1 ? emailsArray.slice(1) : [],
                 created_at: userData.created_at,
                 updated_at: userData.updated_at,
                 followers: userData.followers,
