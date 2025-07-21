@@ -5,58 +5,134 @@ document.addEventListener('DOMContentLoaded', () => {
     const loadingContainer = document.getElementById('loading-container');
     const terminal = document.getElementById('terminal');
     
-    function jsonToColoredText(obj, indent = '') {
-        if (obj === null) {
-            return `<span class="json-null">null</span>`;
-        }
-        
-        if (typeof obj === 'string') {
-            return `<span class="json-string">"${obj}"</span>`;
-        }
-        
-        if (typeof obj === 'number') {
-            return `<span class="json-number">${obj}</span>`;
-        }
-        
-        if (typeof obj === 'boolean') {
-            return `<span class="json-boolean">${obj}</span>`;
-        }
-        
-        if (Array.isArray(obj)) {
-            if (obj.length === 0) return '[]';
-            
-            let result = '[\n';
-            for (let i = 0; i < obj.length; i++) {
-                result += indent + '  ' + jsonToColoredText(obj[i], indent + '  ');
-                if (i < obj.length - 1) result += ',';
-                result += '\n';
+    async function safeGetJson(url) {
+        try {
+            const response = await fetch(url);
+            if (!response.ok) {
+                if (response.status === 403) {
+                    const rateLimit = await checkRateLimit();
+                    throw new Error(`API rate limit exceeded. Reset at: ${rateLimit.reset_time}`);
+                }
+                return null;
             }
-            return result + indent + ']';
+            return await response.json();
+        } catch (error) {
+            console.error(`Error fetching ${url}:`, error);
+            return null;
         }
-        
-        if (typeof obj === 'object') {
-            const keys = Object.keys(obj);
-            if (keys.length === 0) return '{}';
-            
-            let result = '{\n';
-            for (let i = 0; i < keys.length; i++) {
-                const key = keys[i];
-                result += `${indent}  <span class="json-key">"${key}"</span>: ${jsonToColoredText(obj[key], indent + '  ')}`;
-                if (i < keys.length - 1) result += ',';
-                result += '\n';
-            }
-            return result + indent + '}';
-        }
-        
-        return obj;
     }
-    
+
+    async function checkRateLimit() {
+        const rateLimitUrl = 'https://api.github.com/rate_limit';
+        const rateData = await safeGetJson(rateLimitUrl);
+        if (rateData) {
+            return {
+                remaining: rateData.rate.remaining,
+                limit: rateData.rate.limit,
+                reset_time: new Date(rateData.rate.reset * 1000).toLocaleTimeString()
+            };
+        }
+        return { remaining: 0, limit: 0, reset_time: 'Unknown' };
+    }
+
+    async function getRepos(username, limit = 100) {
+        const reposUrl = `https://api.github.com/users/${username}/repos?per_page=${limit}`;
+        const repos = await safeGetJson(reposUrl);
+        if (!repos) return [];
+        
+        return repos
+            .filter(repo => !repo.fork)
+            .slice(0, limit)
+            .map(repo => ({
+                name: repo.name,
+                description: repo.description,
+                language: repo.language,
+                stars: repo.stargazers_count,
+                forks: repo.forks_count,
+                created_at: repo.created_at,
+                updated_at: repo.updated_at,
+                html_url: repo.html_url
+            }));
+    }
+
+    async function getEmailsFromRepoCommits(username, repoName, limit = 100) {
+        const commitsUrl = `https://api.github.com/repos/${username}/${repoName}/commits?per_page=${limit}`;
+        const commits = await safeGetJson(commitsUrl);
+        if (!commits) return [];
+        
+        const emails = new Set();
+        commits.forEach(commit => {
+            if (commit.commit && commit.commit.author && commit.commit.author.email) {
+                const email = commit.commit.author.email;
+                if (email.includes('@gmail.com')) {
+                    emails.add(email);
+                }
+            }
+        });
+        
+        return Array.from(emails);
+    }
+
+    async function fetchGitHubUser(username) {
+        try {
+            const userUrl = `https://api.github.com/users/${username}`;
+            const userData = await safeGetJson(userUrl);
+            
+            if (!userData) {
+                return { error: "Kullanıcı bulunamadı" };
+            }
+            
+            const rateLimit = await checkRateLimit();
+            if (rateLimit.remaining <= 1) {
+                return { 
+                    error: "Rate limit yedin!",
+                    rate_limit: rateLimit,
+                    message: `API rate limit exceeded. Reset at: ${rateLimit.reset_time}`
+                };
+            }
+            
+            const repos = await getRepos(username);
+            
+            let emails = [];
+            if (repos.length > 0) {
+                emails = await getEmailsFromRepoCommits(username, repos[0].name);
+            }
+            
+            return {
+                username: userData.login,
+                name: userData.name,
+                avatar_url: userData.avatar_url,
+                bio: userData.bio,
+                email: emails.length > 0 ? emails[0] : null,
+                other_emails: emails.length > 1 ? emails.slice(1) : [],
+                created_at: userData.created_at,
+                updated_at: userData.updated_at,
+                followers: userData.followers,
+                following: userData.following,
+                public_repos: userData.public_repos,
+                repos_count: repos.length,
+                repos: repos,
+                rate_limit: rateLimit
+            };
+        } catch (error) {
+            console.error("GitHub API hatası:", error);
+            return { 
+                error: error.message,
+                details: "GitHub API'den veri alınırken hata oluştu"
+            };
+        }
+    }
+
     function logToTerminal(message, isError = false) {
         const line = document.createElement('div');
-        line.className = isError ? 'error-message' : '';
+        line.className = isError ? 'error-message' : 'terminal-line';
         
         if (typeof message === 'object') {
-            line.innerHTML = jsonToColoredText(message);
+            const formattedJson = JSON.stringify(message, null, 2)
+                .split('\n')
+                .map(line => line.replace(/ /g, '&nbsp;'))
+                .join('<br>');
+            line.innerHTML = formattedJson;
         } else {
             line.textContent = message;
         }
@@ -64,11 +140,11 @@ document.addEventListener('DOMContentLoaded', () => {
         terminal.appendChild(line);
         terminal.scrollTop = terminal.scrollHeight;
     }
-    
+
     function clearTerminal() {
         terminal.innerHTML = '';
     }
-    
+
     searchBtn.addEventListener('click', async () => {
         const username = usernameInput.value.trim();
         if (!username) return;
@@ -87,12 +163,12 @@ document.addEventListener('DOMContentLoaded', () => {
                         logToTerminal({
                             error: userData.error,
                             rate_limit: userData.rate_limit,
-                            reset_time: userData.reset_time
+                            message: userData.message
                         }, true);
                         
                         const rateLimitLine = document.createElement('div');
-                        rateLimitLine.className = 'rate-limit';
-                        rateLimitLine.textContent = 'RATE LIMIT YEDİN! API anahtarı olmadan saatlik 60 istek hakkın var.';
+                        rateLimitLine.className = 'rate-limit-warning';
+                        rateLimitLine.textContent = 'NOT: API anahtarı olmadan saatlik 60 istek hakkınız var.';
                         terminal.appendChild(rateLimitLine);
                     } else {
                         logToTerminal(userData, true);
@@ -117,6 +193,6 @@ document.addEventListener('DOMContentLoaded', () => {
         clearTerminal();
     });
     
-    logToTerminal("GitHub kullanıcı bilgisi sorgulama aracına hoş geldiniz!");
-    logToTerminal("Bir kullanıcı adı girip arama yapın.");
+    logToTerminal("GitHub Kullanıcı Bilgisi Sorgulayıcısı");
+    logToTerminal("Bir GitHub kullanıcı adı girip ara butonuna basın.");
 });
