@@ -266,5 +266,69 @@ body {
     }
     50% {
         opacity: 0.5;
+
+@media only screen and (max-width: 900px) {
+    .gui-container {
+        width: 95vw;
+        height: auto;
+        min-height: 90vh;
+        padding: 15px;
+    }
+
+    .gui-title {
+        font-size: 2.5rem;
+        margin: 15px 0;
+    }
+
+    .search-container {
+        width: 95%;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .input-container {
+        width: 100%;
+    }
+
+    .icon-btn {
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    .terminal {
+        width: 95%;
+        height: 300px;
+    }
+
+    .rgb-border {
+        top: -3px;
+        left: -3px;
+        right: -3px;
+        bottom: -3px;
+        border-radius: 18px;
+    }
+}
+
+@media only screen and (max-width: 480px) {
+    .gui-title {
+        font-size: 2rem;
+    }
+
+    .input-container input {
+        padding: 12px;
+    }
+
+    .terminal {
+        height: 250px;
+        font-size: 0.9rem;
+    }
+}
+
+@media only screen and (max-height: 700px) {
+    .gui-container {
+        height: auto;
+        padding-bottom: 30px;
+    }
+}
     }
 }
