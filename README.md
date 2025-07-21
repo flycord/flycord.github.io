@@ -1,4 +1,4 @@
-# GitHub Kullanıcı Bilgi Aracı 🚀
+# Rencord Kullanıcı Bilgi Aracı 🚀
 
 ## 📌 Proje Hakkında
 Bu araç, GitHub kullanıcılarının profil bilgilerini, repolarını ve commitlerindeki e-posta adreslerini kolayca görüntülemenizi sağlar. Tamamen frontend tabanlı çalışır ve herhangi bir sunucuya ihtiyaç duymaz.
