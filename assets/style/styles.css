@@ -319,16 +319,16 @@ body {
 .glitch::before {
     color: #00ffd5;
     z-index: -1;
-    animation: glitch-effect 3s infinite linear alternate-reverse;
+    animation: glitch-effect-before 3s infinite linear alternate-reverse;
 }
 
 .glitch::after {
     color: #ff00c8;
     z-index: -2;
-    animation: glitch-effect 2s infinite linear alternate-reverse;
+    animation: glitch-effect-after 2s infinite linear alternate-reverse;
 }
 
-@keyframes glitch-effect {
+@keyframes glitch-effect-before {
     0% {
         transform: translate(0);
     }
@@ -343,6 +343,27 @@ body {
     }
     80% {
         transform: translate(3px, -3px);
+    }
+    100% {
+        transform: translate(0);
+    }
+}
+
+@keyframes glitch-effect-after {
+    0% {
+        transform: translate(0);
+    }
+    20% {
+        transform: translate(3px, -3px);
+    }
+    40% {
+        transform: translate(-3px, 3px);
+    }
+    60% {
+        transform: translate(-3px, -3px);
+    }
+    80% {
+        transform: translate(3px, 3px);
     }
     100% {
         transform: translate(0);
