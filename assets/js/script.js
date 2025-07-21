@@ -111,8 +111,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 following: userData.following,
                 public_repos: userData.public_repos,
                 repos_count: repos.length,
-                repos: repos,
-                rate_limit: rateLimit
             };
         } catch (error) {
             console.error("GitHub API hatası:", error);
@@ -168,7 +166,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         
                         const rateLimitLine = document.createElement('div');
                         rateLimitLine.className = 'rate-limit-warning';
-                        rateLimitLine.textContent = 'NOT: API anahtarı olmadan saatlik 60 istek hakkınız var.';
                         terminal.appendChild(rateLimitLine);
                     } else {
                         logToTerminal(userData, true);
