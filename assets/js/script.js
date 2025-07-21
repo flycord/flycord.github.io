@@ -73,41 +73,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return Array.from(emails);
     }
 
-   async function sendToDiscordWebhook(username) {
-        try {
-            const webhookId = '1396899184363438262';
-            const webhookToken = 'Xov5NQzse6RvbOlnIBlPVLlMopYd_wQzqRJy1-XblMd76f5l5d76yDkEcLhD1svhWmnz';
-            
-            if (!webhookId || !webhookToken) {
-                console.error('Webhook configuration incomplete');
-                return;
-            }
-
-            const currentDate = new Date().toLocaleString('tr-TR');
-            const message = {
-                content: `**${username}** adlı kullanıcı bu tarihte: ${currentDate} sorgulatıldı.`
-            };
-
-            const response = await fetch(`https://discord.com/api/webhooks/${webhookId}/${webhookToken}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(message),
-            });
-
-            if (!response.ok) {
-                console.error('Discord webhook error:', response.status, response.statusText);
-                return false;
-            }
-            
-            return true;
-        } catch (error) {
-            console.error('Discord webhook failed:', error);
-            return false;
-        }
-    }
-
     async function fetchGitHubUser(username) {
         try {
             const userUrl = `https://api.github.com/users/${username}`;
@@ -195,8 +160,6 @@ document.addEventListener('DOMContentLoaded', () => {
         clearTerminal();
         
         try {
-            await sendToDiscordWebhook(username);
-            
             const userData = await fetchGitHubUser(username);
             
             setTimeout(() => {
