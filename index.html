@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rencord</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./assets/style/styles.css">
+</head>
+<body>
+    <div class="gui-container">
+        <div class="rgb-border"></div>
+        <div class="gui-content">
+            <h1 class="gui-title">RENCORD</h1>
+            <div class="search-container">
+                <div class="input-container">
+                    <input type="text" id="username-input" placeholder="GitHub username girin...">
+                    <div class="input-corner"></div>
+                </div>
+                <button id="search-btn" class="icon-btn">
+                    <i class="fas fa-search"></i>
+                </button>
+                <button id="clear-btn" class="icon-btn">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+            <div id="loading-container" class="loading-container">
+                <p>Yükleniyor...</p>
+                <div class="potion-loading">
+                    <div class="potion-bottle">
+                        <div class="potion-liquid"></div>
+                    </div>
+                </div>
+            </div>
+            <div id="terminal" class="terminal"></div>
+        </div>
+    </div>
+
+    <script src="./assets/api/api.js"></script>
+    <script src="./assets/js/script.js"></script>
+</body>
+</html>
