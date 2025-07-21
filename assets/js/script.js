@@ -183,6 +183,5 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     logToTerminal("GitHub Kullanıcı Bilgisi Sorgulama Aracı");
-    logToTerminal("----------------------------------------");
     logToTerminal("Bir GitHub kullanıcı adı girip arama yapın. Örnek: 'torvalds'");
 });
