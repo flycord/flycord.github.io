@@ -115,3 +115,5 @@ async function fetchGitHubUser(username) {
         };
     }
 }
+
+export { fetchGitHubUser };
