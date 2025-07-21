@@ -303,7 +303,6 @@ body {
     position: relative;
     display: inline-block;
     color: #7a00ff;
-    animation: glitch-effect 2s infinite linear alternate-reverse;
 }
 
 .glitch::before,
