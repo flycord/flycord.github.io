@@ -198,7 +198,4 @@ document.addEventListener('DOMContentLoaded', () => {
     clearBtn.addEventListener('click', () => {
         clearTerminal();
     });
-    
-    logToTerminal("GitHub Kullanıcı Bilgisi Sorgulayıcısı");
-    logToTerminal("Bir GitHub kullanıcı adı girip ara butonuna basın.");
 });
