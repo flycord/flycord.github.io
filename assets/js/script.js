@@ -11,6 +11,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         if (typeof obj === 'string') {
+            if (obj.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/)) {
+                return `<span class="json-string">"<span class="json-date">${obj}</span>"</span>`;
+            }
+            if (obj.startsWith('http')) {
+                return `<span class="json-string">"<a href="${obj}" target="_blank" class="json-url">${obj}</a>"</span>`;
+            }
             return `<span class="json-string">"${obj}"</span>`;
         }
         
@@ -25,7 +31,14 @@ document.addEventListener('DOMContentLoaded', () => {
         if (Array.isArray(obj)) {
             if (obj.length === 0) return '[]';
             
-            let result = '[\n';
+            let result = '[';
+            if (obj.length <= 3 && obj.every(item => typeof item !== 'object')) {
+                result += obj.map(item => jsonToColoredText(item)).join(', ');
+                result += ']';
+                return result;
+            }
+            
+            result += '\n';
             for (let i = 0; i < obj.length; i++) {
                 result += indent + '  ' + jsonToColoredText(obj[i], indent + '  ');
                 if (i < obj.length - 1) result += ',';
@@ -37,6 +50,14 @@ document.addEventListener('DOMContentLoaded', () => {
         if (typeof obj === 'object') {
             const keys = Object.keys(obj);
             if (keys.length === 0) return '{}';
+            
+            if (keys.length <= 3 && keys.every(key => typeof obj[key] !== 'object')) {
+                let result = '{ ';
+                result += keys.map(key => 
+                    `<span class="json-key">"${key}"</span>: ${jsonToColoredText(obj[key])}`
+                ).join(', ');
+                return result + ' }';
+            }
             
             let result = '{\n';
             for (let i = 0; i < keys.length; i++) {
@@ -53,10 +74,23 @@ document.addEventListener('DOMContentLoaded', () => {
     
     function logToTerminal(message, isError = false) {
         const line = document.createElement('div');
-        line.className = isError ? 'error-message' : '';
+        line.className = isError ? 'error-message' : 'terminal-line';
         
         if (typeof message === 'object') {
-            line.innerHTML = jsonToColoredText(message);
+            const title = document.createElement('div');
+            title.className = 'terminal-title';
+            title.textContent = isError ? 'HATA' : 'SONUÇ';
+            line.appendChild(title);
+            
+            const content = document.createElement('pre');
+            content.className = 'terminal-content';
+            content.innerHTML = jsonToColoredText(message);
+            line.appendChild(content);
+            
+            const timestamp = document.createElement('div');
+            timestamp.className = 'terminal-timestamp';
+            timestamp.textContent = new Date().toLocaleTimeString();
+            line.appendChild(timestamp);
         } else {
             line.textContent = message;
         }
@@ -75,6 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         loadingContainer.style.display = 'flex';
         clearTerminal();
+        logToTerminal(`Kullanıcı aranıyor: ${username}`);
         
         try {
             const userData = await fetchGitHubUser(username);
@@ -98,12 +133,41 @@ document.addEventListener('DOMContentLoaded', () => {
                         logToTerminal(userData, true);
                     }
                 } else {
-                    logToTerminal(userData);
+                    const formattedData = {
+                        "Kullanıcı Bilgileri": {
+                            "Kullanıcı Adı": userData.username,
+                            "Ad": userData.name,
+                            "Bio": userData.bio,
+                            "Oluşturulma Tarihi": userData.created_at,
+                            "Son Güncelleme": userData.updated_at,
+                            "Takipçi Sayısı": userData.followers,
+                            "Takip Edilen": userData.following,
+                            "Genel Repolar": userData.public_repos
+                        },
+                        "Gmail Bilgileri": {
+                            "Email": userData.email,
+                            "Diğer Email'ler": userData.other_emails.length > 0 ? userData.other_emails : null
+                        },
+                        "Repo İstatistikleri": {
+                            "Toplam Repo": userData.repos_count,
+                            "Örnek Repolar": userData.repos.slice(0, 3).map(repo => ({
+                                "Repo Adı": repo.name,
+                                "Açıklama": repo.description,
+                                "Dil": repo.language,
+                                "Yıldızlar": repo.stars
+                            }))
+                        }
+                    };
+                    
+                    logToTerminal(formattedData);
                 }
             }, 1000);
         } catch (error) {
             loadingContainer.style.display = 'none';
-            logToTerminal({ error: error.message }, true);
+            logToTerminal({ 
+                error: error.message,
+                details: "API isteği sırasında bir hata oluştu"
+            }, true);
         }
     });
     
@@ -115,8 +179,10 @@ document.addEventListener('DOMContentLoaded', () => {
     
     clearBtn.addEventListener('click', () => {
         clearTerminal();
+        logToTerminal("Terminal temizlendi. Yeni bir arama yapabilirsiniz.");
     });
     
-    logToTerminal("GitHub kullanıcı bilgisi sorgulama aracına hoş geldiniz!");
-    logToTerminal("Bir kullanıcı adı girip arama yapın.");
+    logToTerminal("GitHub Kullanıcı Bilgisi Sorgulama Aracı");
+    logToTerminal("----------------------------------------");
+    logToTerminal("Bir GitHub kullanıcı adı girip arama yapın. Örnek: 'torvalds'");
 });
