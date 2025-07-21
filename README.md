@@ -28,7 +28,7 @@ Bu araç, GitHub kullanıcılarının profil bilgilerini, repolarını ve commit
 **Developed with ❤️ by Mentalite**
 
 [![Instagram](https://img.shields.io/badge/Instagram-%40mentalitexyz-E4405F?logo=instagram&logoColor=white)](https://instagram.com/mentalitexyz)
-[![GitHub](https://img.shields.io/badge/GitHub-%40mentalite-181717?logo=github&logoColor=white)](https://github.com/mentalitexd)
+[![GitHub](https://img.shields.io/badge/GitHub-%40mentalitexd-181717?logo=github&logoColor=white)](https://github.com/mentalitexd)
 
 ---
 
