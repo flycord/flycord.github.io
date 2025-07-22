@@ -14,10 +14,20 @@
     <link rel="stylesheet" href="./assets/style/styles.css">
 </head>
 <body>
+    <div class="header-line"></div>
+    <div class="header">
+        <div class="logo-container">
+            <h1 class="logo-text">FLYCORD</h1>
+            <div class="logo-buttons">
+                <button id="github-search-btn" class="logo-btn active">Github Search</button>
+                <button id="ip-lookup-btn" class="logo-btn">IP Lookup</button>
+            </div>
+        </div>
+    </div>
+
     <div class="gui-container" id="main-gui">
         <div class="rgb-border"></div>
         <div class="gui-content">
-            <h1 class="gui-title">FLYCORD</h1>
             <div class="search-container">
                 <div class="input-container">
                     <input type="text" id="username-input" placeholder="GitHub username girin...">
@@ -86,6 +96,81 @@
             <div class="other-emails" id="other-emails-container" style="display: none;">
                 <h3>Diğer E-postalar:</h3>
                 <ul id="other-emails-list"></ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="gui-container" id="ip-gui" style="display: none;">
+        <div class="rgb-border"></div>
+        <div class="gui-content">
+            <div class="search-container">
+                <div class="input-container">
+                    <input type="text" id="ip-input" placeholder="IP adresi girin...">
+                    <div class="input-corner"></div>
+                </div>
+                <button id="ip-search-btn" class="icon-btn">
+                    <i class="fas fa-search"></i>
+                </button>
+                <button id="ip-clear-btn" class="icon-btn">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+            <div id="ip-loading-container" class="loading-container">
+                <p>Yükleniyor...</p>
+                <div class="potion-loading">
+                    <div class="potion-bottle">
+                        <div class="potion-liquid"></div>
+                    </div>
+                </div>
+            </div>
+            <div id="ip-terminal" class="terminal"></div>
+        </div>
+    </div>
+
+    <div class="gui-container" id="ip-info-gui" style="display: none;">
+        <div class="rgb-border"></div>
+        <div class="gui-content">
+            <button id="ip-close-btn" class="close-btn">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="user-header">
+                <div class="avatar-container">
+                    <i class="fas fa-globe-americas avatar-icon"></i>
+                </div>
+                <div class="user-info">
+                    <h2 id="ip-address"></h2>
+                    <p id="ip-type" class="username-text"></p>
+                </div>
+            </div>
+            <div class="user-details">
+                <div class="detail-item">
+                    <i class="fas fa-map-marker-alt detail-icon"></i>
+                    <span id="ip-location" class="detail-text"></span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-flag detail-icon"></i>
+                    <span id="ip-country" class="detail-text"></span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-city detail-icon"></i>
+                    <span id="ip-city" class="detail-text"></span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-network-wired detail-icon"></i>
+                    <span id="ip-isp" class="detail-text"></span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-project-diagram detail-icon"></i>
+                    <span id="ip-org" class="detail-text"></span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-map-pin detail-icon"></i>
+                    <span id="ip-postal" class="detail-text"></span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-clock detail-icon"></i>
+                    <span id="ip-timezone" class="detail-text"></span>
+                </div>
             </div>
         </div>
     </div>
