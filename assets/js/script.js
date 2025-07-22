@@ -7,6 +7,42 @@ document.addEventListener('DOMContentLoaded', () => {
     const mainGui = document.getElementById('main-gui');
     const userGui = document.getElementById('user-gui');
     const closeBtn = document.getElementById('close-btn');
+
+    const ipInput = document.getElementById('ip-input');
+    const ipSearchBtn = document.getElementById('ip-search-btn');
+    const ipClearBtn = document.getElementById('ip-clear-btn');
+    const ipLoadingContainer = document.getElementById('ip-loading-container');
+    const ipTerminal = document.getElementById('ip-terminal');
+    const ipGui = document.getElementById('ip-gui');
+    const ipInfoGui = document.getElementById('ip-info-gui');
+    const ipCloseBtn = document.getElementById('ip-close-btn');
+    
+    const githubSearchBtn = document.getElementById('github-search-btn');
+    const ipLookupBtn = document.getElementById('ip-lookup-btn');
+    
+    const ipAddress = document.getElementById('ip-address');
+    const ipType = document.getElementById('ip-type');
+    const ipLocation = document.getElementById('ip-location');
+    const ipCountry = document.getElementById('ip-country');
+    const ipCity = document.getElementById('ip-city');
+    const ipIsp = document.getElementById('ip-isp');
+    const ipOrg = document.getElementById('ip-org');
+    const ipPostal = document.getElementById('ip-postal');
+    const ipTimezone = document.getElementById('ip-timezone');
+    
+    githubSearchBtn.addEventListener('click', () => {
+        githubSearchBtn.classList.add('active');
+        ipLookupBtn.classList.remove('active');
+        mainGui.style.display = 'block';
+        ipGui.style.display = 'none';
+    });
+    
+    ipLookupBtn.addEventListener('click', () => {
+        ipLookupBtn.classList.add('active');
+        githubSearchBtn.classList.remove('active');
+        mainGui.style.display = 'none';
+        ipGui.style.display = 'block';
+    });
     
     const userAvatar = document.getElementById('user-avatar');
     const userName = document.getElementById('user-name');
@@ -92,6 +128,100 @@ document.addEventListener('DOMContentLoaded', () => {
         
         return Array.from(emails);
     }
+
+    async function fetchIPInfo(ipAddress) {
+        try {
+            const response = await fetch(`https://ipapi.co/${ipAddress}/json/`);
+            if (!response.ok) {
+                throw new Error('IP bilgisi alınamadı');
+            }
+            return await response.json();
+        } catch (error) {
+            console.error('IP bilgisi alınırken hata:', error);
+            return { error: error.message };
+        }
+    }
+
+    function displayIPInfo(ipData) {
+        ipGui.classList.add('blurred');
+        
+        ipAddress.textContent = ipData.ip || 'Bilinmiyor';
+        ipType.textContent = `Type: ${ipData.version || 'Bilinmiyor'}`;
+        ipLocation.textContent = `Location: ${ipData.city || 'Bilinmiyor'}, ${ipData.region || 'Bilinmiyor'}`;
+        ipCountry.textContent = `Country: ${ipData.country_name || 'Bilinmiyor'} (${ipData.country || 'Bilinmiyor'})`;
+        ipCity.textContent = `City: ${ipData.city || 'Bilinmiyor'}`;
+        ipIsp.textContent = `ISP: ${ipData.org || ipData.asn || 'Bilinmiyor'}`;
+        ipOrg.textContent = `Organization: ${ipData.org || 'Bilinmiyor'}`;
+        ipPostal.textContent = `Postal Code: ${ipData.postal || 'Bilinmiyor'}`;
+        ipTimezone.textContent = `Timezone: ${ipData.timezone || 'Bilinmiyor'}`;
+        
+        ipGui.style.opacity = '0';
+        ipGui.style.transition = 'opacity 0.3s ease';
+        
+        setTimeout(() => {
+            ipGui.style.display = 'none';
+            ipInfoGui.style.display = 'block';
+            ipInfoGui.style.animation = 'fadeIn 0.5s ease-out';
+        }, 300);
+    }
+    
+    ipSearchBtn.addEventListener('click', async () => {
+        const ip = ipInput.value.trim();
+        if (!ip) return;
+        
+        ipLoadingContainer.style.display = 'flex';
+        ipTerminal.innerHTML = '';
+        
+        try {
+            const ipData = await fetchIPInfo(ip);
+            
+            setTimeout(() => {
+                ipLoadingContainer.style.display = 'none';
+                
+                if (ipData.error) {
+                    logToIPTerminal({ error: ipData.error }, true);
+                } else {
+                    displayIPInfo(ipData);
+                }
+            }, 1000);
+        } catch (error) {
+            ipLoadingContainer.style.display = 'none';
+            logToIPTerminal({ error: error.message }, true);
+        }
+    });
+    
+    function logToIPTerminal(message, isError = false) {
+        const line = document.createElement('div');
+        line.className = isError ? 'error-message' : 'terminal-line';
+        
+        if (typeof message === 'object') {
+            const formattedJson = JSON.stringify(message, null, 2)
+                .split('\n')
+                .map(line => line.replace(/ /g, '&nbsp;'))
+                .join('<br>');
+            line.innerHTML = formattedJson;
+        } else {
+            line.textContent = message;
+        }
+        
+        ipTerminal.appendChild(line);
+        ipTerminal.scrollTop = ipTerminal.scrollHeight;
+    }
+    
+    ipClearBtn.addEventListener('click', () => {
+        ipTerminal.innerHTML = '';
+    });
+    
+    ipCloseBtn.addEventListener('click', () => {
+        ipInfoGui.style.animation = 'fadeOut 0.5s ease-out';
+        
+        setTimeout(() => {
+            ipInfoGui.style.display = 'none';
+            ipGui.style.display = 'block';
+            ipGui.style.opacity = '1';
+            ipGui.classList.remove('blurred');
+        }, 500);
+    });
 
     async function fetchGitHubUser(username) {
         try {
