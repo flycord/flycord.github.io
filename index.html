@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="./assets/style/styles.css">
 </head>
 <body>
-    <div class="gui-container">
+    <div class="gui-container" id="main-gui">
         <div class="rgb-border"></div>
         <div class="gui-content">
             <h1 class="gui-title">FLYCORD</h1>
@@ -42,10 +42,58 @@
         </div>
     </div>
 
-<footer class="footer">
-    <div class="footer-line"></div>
-    <p class="footer-text">© 2025 FlyCord - Website Designed by <span class="glitch" data-text="Mentalite">Mentalite</span></p>
-</footer>
+    <div class="gui-container" id="user-gui" style="display: none;">
+        <div class="rgb-border"></div>
+        <div class="gui-content">
+            <button id="close-btn" class="close-btn">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="user-header">
+                <div class="avatar-container">
+                    <img id="user-avatar" src="" alt="Avatar" class="avatar-img">
+                </div>
+                <div class="user-info">
+                    <h2 id="user-name"></h2>
+                    <p id="user-username" class="username-text"></p>
+                </div>
+            </div>
+            <div class="user-details">
+                <div class="detail-item">
+                    <i class="fas fa-info-circle detail-icon"></i>
+                    <span id="user-bio" class="detail-text"></span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-envelope detail-icon"></i>
+                    <span id="user-email" class="detail-text"></span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-calendar-alt detail-icon"></i>
+                    <span id="user-created" class="detail-text"></span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-users detail-icon"></i>
+                    <span id="user-followers" class="detail-text"></span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-user-plus detail-icon"></i>
+                    <span id="user-following" class="detail-text"></span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-code-branch detail-icon"></i>
+                    <span id="user-repos" class="detail-text"></span>
+                </div>
+            </div>
+            <div class="other-emails" id="other-emails-container" style="display: none;">
+                <h3>Diğer E-postalar:</h3>
+                <ul id="other-emails-list"></ul>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-line"></div>
+        <p class="footer-text">© 2025 FlyCord - Website Designed by <span class="glitch" data-text="Mentalite">Mentalite</span></p>
+    </footer>
     
     <script src="./assets/js/script.js"></script>
 </body>
