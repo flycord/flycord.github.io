@@ -4,6 +4,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const clearBtn = document.getElementById('clear-btn');
     const loadingContainer = document.getElementById('loading-container');
     const terminal = document.getElementById('terminal');
+    const mainGui = document.getElementById('main-gui');
+    const userGui = document.getElementById('user-gui');
+    const closeBtn = document.getElementById('close-btn');
+    
+    const userAvatar = document.getElementById('user-avatar');
+    const userName = document.getElementById('user-name');
+    const userUsername = document.getElementById('user-username');
+    const userBio = document.getElementById('user-bio');
+    const userEmail = document.getElementById('user-email');
+    const userCreated = document.getElementById('user-created');
+    const userFollowers = document.getElementById('user-followers');
+    const userFollowing = document.getElementById('user-following');
+    const userRepos = document.getElementById('user-repos');
+    const otherEmailsContainer = document.getElementById('other-emails-container');
+    const otherEmailsList = document.getElementById('other-emails-list');
+    
+    closeBtn.addEventListener('click', () => {
+        userGui.style.display = 'none';
+        mainGui.style.display = 'block';
+    });
     
     async function safeGetJson(url) {
         try {
@@ -130,6 +150,40 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function displayUserData(userData) {
+        userAvatar.src = userData.avatar_url || 'https://via.placeholder.com/100';
+        
+        userName.textContent = userData.name || userData.username;
+        userUsername.textContent = `@${userData.username}`;
+        
+        userBio.textContent = userData.bio || 'Bio bilgisi yok';
+        userEmail.textContent = userData.email || 'E-posta bilgisi yok';
+        
+        const createdDate = new Date(userData.created_at);
+        userCreated.textContent = `Hesap oluşturulma: ${createdDate.toLocaleDateString()}`;
+        
+        userFollowers.textContent = `Takipçiler: ${userData.followers}`;
+        userFollowing.textContent = `Takip edilen: ${userData.following}`;
+        
+        userRepos.textContent = `Public Repolar: ${userData.public_repos} (${userData.repos_count} görüntülendi)`;
+        
+        if (userData.other_emails && userData.other_emails.length > 0) {
+            otherEmailsContainer.style.display = 'block';
+            otherEmailsList.innerHTML = '';
+            
+            userData.other_emails.forEach(email => {
+                const li = document.createElement('li');
+                li.textContent = email;
+                otherEmailsList.appendChild(li);
+            });
+        } else {
+            otherEmailsContainer.style.display = 'none';
+        }
+    
+        mainGui.style.display = 'none';
+        userGui.style.display = 'block';
+    }
+
     function logToTerminal(message, isError = false) {
         const line = document.createElement('div');
         line.className = isError ? 'error-message' : 'terminal-line';
@@ -172,15 +226,11 @@ document.addEventListener('DOMContentLoaded', () => {
                             rate_limit: userData.rate_limit,
                             message: userData.message
                         }, true);
-                        
-                        const rateLimitLine = document.createElement('div');
-                        rateLimitLine.className = 'rate-limit-warning';
-                        terminal.appendChild(rateLimitLine);
                     } else {
                         logToTerminal(userData, true);
                     }
                 } else {
-                    logToTerminal(userData);
+                    displayUserData(userData);
                 }
             }, 1000);
         } catch (error) {
