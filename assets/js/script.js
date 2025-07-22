@@ -150,41 +150,69 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function displayUserData(userData) {
-        mainGui.classList.add('blurred');
-        
-        userAvatar.src = userData.avatar_url || 'https://via.placeholder.com/100';
-        
-        userName.textContent = userData.name || userData.username;
-        userUsername.textContent = `@${userData.username}`;
-        
-        userBio.textContent = userData.bio || 'Bio bilgisi yok';
-        userEmail.textContent = userData.email || 'E-posta bilgisi yok';
-        
-        const createdDate = new Date(userData.created_at);
-        userCreated.textContent = `Hesap oluşturulma: ${createdDate.toLocaleDateString()}`;
-        
-        userFollowers.textContent = `Takipçiler: ${userData.followers}`;
-        userFollowing.textContent = `Takip edilen: ${userData.following}`;
-        
-        userRepos.textContent = `Public Repolar: ${userData.public_repos} (${userData.repos_count} görüntülendi)`;
-        
-        if (userData.other_emails && userData.other_emails.length > 0) {
-            otherEmailsContainer.style.display = 'block';
-            otherEmailsList.innerHTML = '';
-            
-            userData.other_emails.forEach(email => {
-                const li = document.createElement('li');
-                li.textContent = email;
-                otherEmailsList.appendChild(li);
-            });
-        } else {
-            otherEmailsContainer.style.display = 'none';
-        }
+function displayUserData(userData) {
+    mainGui.classList.add('blurred');
     
+    userAvatar.src = userData.avatar_url || 'https://via.placeholder.com/100';
+    
+    userName.textContent = userData.name || userData.username;
+    userUsername.textContent = `@${userData.username}`;
+    userBio.textContent = userData.bio || 'Bio bilgisi yok';
+    userEmail.textContent = userData.email || 'E-posta bilgisi yok';
+    
+    const createdDate = new Date(userData.created_at);
+    userCreated.textContent = `Hesap oluşturulma: ${createdDate.toLocaleDateString()}`;
+    
+    userFollowers.textContent = `Takipçiler: ${userData.followers}`;
+    userFollowing.textContent = `Takip edilen: ${userData.following}`;
+    
+    userRepos.textContent = `Public Repolar: ${userData.public_repos} (${userData.repos_count} görüntülendi)`;
+    
+    if (userData.other_emails && userData.other_emails.length > 0) {
+        otherEmailsContainer.style.display = 'block';
+        otherEmailsList.innerHTML = '';
+        
+        userData.other_emails.forEach(email => {
+            const li = document.createElement('li');
+            li.textContent = email;
+            otherEmailsList.appendChild(li);
+        });
+    } else {
+        otherEmailsContainer.style.display = 'none';
+    }
+    
+    mainGui.style.opacity = '0';
+    mainGui.style.transition = 'opacity 0.3s ease';
+    
+    setTimeout(() => {
         mainGui.style.display = 'none';
         userGui.style.display = 'block';
+        userGui.style.animation = 'fadeIn 0.5s ease-out';
+    }, 300);
+}
+
+closeBtn.addEventListener('click', () => {
+    userGui.style.animation = 'fadeOut 0.5s ease-out';
+    
+    setTimeout(() => {
+        userGui.style.display = 'none';
+        mainGui.style.display = 'block';
+        mainGui.style.opacity = '1';
+        mainGui.classList.remove('blurred');
+    }, 500);
+});
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translate(-50%, -45%); }
+        to { opacity: 1; transform: translate(-50%, -50%); }
     }
+    @keyframes fadeOut {
+        from { opacity: 1; transform: translate(-50%, -50%); }
+        to { opacity: 0; transform: translate(-50%, -45%); }
+    }
+`;
+document.head.appendChild(style);
 
     function logToTerminal(message, isError = false) {
         const line = document.createElement('div');
