@@ -151,6 +151,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function displayUserData(userData) {
+        mainGui.classList.add('blurred');
+        
         userAvatar.src = userData.avatar_url || 'https://via.placeholder.com/100';
         
         userName.textContent = userData.name || userData.username;
